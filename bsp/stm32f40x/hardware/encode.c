@@ -114,44 +114,44 @@ static void TIM8_Mode_Config(void)
 	TIM_Cmd(TIM8, ENABLE);   //启动TIM4定时器
 }
 
-static void TIM3_Mode_Config(void)
-{
-	GPIO_InitTypeDef GPIO_InitStructure;
-	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-	TIM_ICInitTypeDef TIM_ICInitStructure;   	
-	NVIC_InitTypeDef NVIC_InitStructure;
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	
-	
-  GPIO_PinAFConfig(GPIOA,GPIO_PinSource6,GPIO_AF_TIM3);
-  GPIO_PinAFConfig(GPIOA,GPIO_PinSource7,GPIO_AF_TIM3);
-	
-	/*- 正交编码器输入引脚 PA->6   PA->7 -*/
+//static void TIM3_Mode_Config(void)
+//{
+//	GPIO_InitTypeDef GPIO_InitStructure;
+//	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+//	TIM_ICInitTypeDef TIM_ICInitStructure;   	
+//	NVIC_InitTypeDef NVIC_InitStructure;
+//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+//	
+//	
+//  GPIO_PinAFConfig(GPIOA,GPIO_PinSource6,GPIO_AF_TIM3);
+//  GPIO_PinAFConfig(GPIOA,GPIO_PinSource7,GPIO_AF_TIM3);
+//	
+//	/*- 正交编码器输入引脚 PA->6   PA->7 -*/
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
+//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+//    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+//    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+//    GPIO_Init(GPIOA, &GPIO_InitStructure);
+//	
 
-	/*- TIM3编码器模式配置 -*/
-	TIM_DeInit(TIM3);
-	TIM_TimeBaseStructure.TIM_Period = Parameter * 4-1;
-	TIM_TimeBaseStructure.TIM_Prescaler = 0;
-	TIM_TimeBaseStructure.TIM_ClockDivision =TIM_CKD_DIV1;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);              
-                 
-	//TIM_EncoderInterfaceConfig(TIM8, TIM_EncoderMode_TI1, TIM_ICPolarity_Rising ,TIM_ICPolarity_Rising);	//配置编码器模式触发源和极性
-	 TIM_EncoderInterfaceConfig(TIM3, TIM_EncoderMode_TI12, TIM_ICPolarity_Rising ,TIM_ICPolarity_Rising);  //注意是TIM_ICPolarity_Rising
-	
-	
-	TIM_ICStructInit(&TIM_ICInitStructure);																																		//配置滤波器
-	TIM_ICInitStructure.TIM_ICFilter = 6;
-	TIM_ICInit(TIM3, &TIM_ICInitStructure);
+//	/*- TIM3编码器模式配置 -*/
+//	TIM_DeInit(TIM3);
+//	TIM_TimeBaseStructure.TIM_Period = Parameter * 4-1;
+//	TIM_TimeBaseStructure.TIM_Prescaler = 0;
+//	TIM_TimeBaseStructure.TIM_ClockDivision =TIM_CKD_DIV1;
+//	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+//	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);              
+//                 
+//	//TIM_EncoderInterfaceConfig(TIM8, TIM_EncoderMode_TI1, TIM_ICPolarity_Rising ,TIM_ICPolarity_Rising);	//配置编码器模式触发源和极性
+//	 TIM_EncoderInterfaceConfig(TIM3, TIM_EncoderMode_TI12, TIM_ICPolarity_Rising ,TIM_ICPolarity_Rising);  //注意是TIM_ICPolarity_Rising
+//	
+//	
+//	TIM_ICStructInit(&TIM_ICInitStructure);																																		//配置滤波器
+//	TIM_ICInitStructure.TIM_ICFilter = 6;
+//	TIM_ICInit(TIM3, &TIM_ICInitStructure);
 		
 		
 //	TIM_ITConfig(  //使能或者失能指定的TIM中断
@@ -167,10 +167,10 @@ static void TIM3_Mode_Config(void)
 //		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //IRQ通道被使能
 //		NVIC_Init(&NVIC_InitStructure);  //根据NVIC_InitStruct中指定的参数初始化外设NVIC寄存器
 		
-	TIM3->CNT = 0;  //0
+//	TIM3->CNT = 0;  //0
 
-	TIM_Cmd(TIM3, ENABLE);   //启动TIM3定时器
-}
+//	TIM_Cmd(TIM3, ENABLE);   //启动TIM3定时器
+//}
 
 int TIM4_num=0;
 //定时采集数据
@@ -198,18 +198,18 @@ void TIM8_UP_TIM13_IRQHandler(void)   //TIM4中断
 	}
 }
 
-int TIM3_num=0;
-//定时采集数据
-void TIM3_IRQHandler(void)   //TIM4中断
-{
-	if (TIM_GetITStatus(TIM3, TIM_IT_Update) == SET) //检查指定的TIM中断发生与否:TIM 中断源 
-	{
-		if((TIM3->CR1&TIM_CR1_DIR)==0) TIM3_num++;
-		else TIM3_num--;
-		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);  //清除TIMx的中断待处理位:TIM 中断源 
-		//modbus_rtu();
-	}
-}
+//int TIM3_num=0;
+////定时采集数据
+//void TIM3_IRQHandler(void)   //TIM4中断
+//{
+//	if (TIM_GetITStatus(TIM3, TIM_IT_Update) == SET) //检查指定的TIM中断发生与否:TIM 中断源 
+//	{
+//		if((TIM3->CR1&TIM_CR1_DIR)==0) TIM3_num++;
+//		else TIM3_num--;
+//		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);  //清除TIMx的中断待处理位:TIM 中断源 
+//		//modbus_rtu();
+//	}
+//}
 
 s32 GetEncoder1(void)
 {
@@ -224,16 +224,16 @@ s32 GetEncoder2(void)
 }
 
 
-s32 GetEncoder3(void)
-{
-	s32 count=TIM3->CNT;
-	return count+TIM3_num*4096;
-}
+//s32 GetEncoder3(void)
+//{
+//	s32 count=TIM3->CNT;
+//	return count+TIM3_num*4096;
+//}
 
 void encode_Init(void)
 {
   TIM4_Mode_Config();
   TIM8_Mode_Config();
-	TIM3_Mode_Config();
+//	TIM3_Mode_Config();
 }
 

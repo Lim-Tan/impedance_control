@@ -222,24 +222,20 @@ void stepmotor_thread_entry(void* parameter)
 	    {							
 		if(mode == 1)
 		{		 
-			 LED0_DIR=0;
+			 LED0_DIR= 0;
 			 Pulse_output(1000,800);//1KHZ,8000???
 		}
 		else if(mode == 2)	
 		{
-			 LED0_DIR=1;
+			 LED0_DIR = 1;
 			 Pulse_output(1000,800);
 		}
 		else if(mode == 0)	
 		{
 			while(count2 < COUNT_NUM && mode != 2)
 			{
-				//rt_kprintf("enter 123\r\n");
-//        Desire_value = 100;			
-//				rt_kprintf("enter 123");
 				LED0_DIR=0;
 				Pulse_output(265,8500);//3.3KHZ,12000    265  250
-//			rt_kprintf("2");
 				while(count_1 < 80 || (count_1 > 2048&&count_1<4096))  //200 400
 				{
 				angle =  OscilElement((float)((200-count_1)*1.8)/1000);	
@@ -251,7 +247,6 @@ void stepmotor_thread_entry(void* parameter)
 				Desire_value = 0;
 				rt_thread_delay(300);         //延时300ms 是为了让PID程序达到稳定
         Desire_value = 300;
-//				rt_kprintf("4");
 				while(count_1 < 150 || (count_1 > 2048&&count_1<4096))    //400  500  600
 				rt_thread_delay(1);
 				Desire_value = 0;
