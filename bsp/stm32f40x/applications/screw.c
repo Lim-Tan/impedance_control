@@ -215,8 +215,19 @@ void key_thread_entry(void* parameter)
   360    380    360    480     360    580
   140    320    180    420     180    520
 */
-float angle;
+/*
+   step_motor应该单独一个线程
+*/
 void stepmotor_thread_entry(void* parameter)
+{
+      
+}
+
+/*
+   控制线程
+*/
+float angle;
+void control_thread_entry(void* parameter)
 {
 	    while(1)
 	    {							
@@ -234,14 +245,19 @@ void stepmotor_thread_entry(void* parameter)
 		{
 			while(count2 < COUNT_NUM && mode != 2)
 			{
+				while(Desire_value < 200)
+				{
+				angle =  OscilElement((float)((200-count_1)*1.8)/1000);	
+				Desire_value = (int)(angle*57.6/0.09);
+				}
 				LED0_DIR=0;
 				Pulse_output(265,8500);//3.3KHZ,12000    265  250
 				while(count_1 < 80 || (count_1 > 2048&&count_1<4096))  //200 400
 				{
-				angle =  OscilElement((float)((200-count_1)*1.8)/1000);	
-				rt_kprintf("enter angle = %d--",(int)angle);
-				Desire_value = (int)(angle*57.6/0.09);
-				rt_kprintf("enter Desire_value = %d--",Desire_value);
+//				angle =  OscilElement((float)((200-count_1)*1.8)/1000);	
+//				rt_kprintf("enter angle = %d--",(int)angle);
+//				Desire_value = (int)(angle*57.6/0.09);
+//				rt_kprintf("enter Desire_value = %d--",Desire_value);
 				rt_thread_delay(1);  
 				}
 				Desire_value = 0;
@@ -273,38 +289,6 @@ void stepmotor_thread_entry(void* parameter)
   author: Kris_tan
   question: the time that change the Desire_value(200ms) is not equal to read data(10ms)
 */
-//void Test_rubber_line_entry(void* parameter)
-//{
-//	int i = 0;
-//	while(1)
-//	{
-//		if(mode == 0 && count2 < COUNT_NUM)
-//		{
-//     for(i=0;i<6;i++)
-//		 {
-//		     Desire_value += 50;
-//			   //rt_kprintf("put one");
-//			   rt_thread_delay(200);
-//		 }
-//		 for(i=6;i>-6;i--)
-//			 {
-//			    Desire_value -= 50;
-//				  rt_thread_delay(200);
-//			 }
-////		 for(i= -12;i<0;i++)
-////			 {
-////			   Desire_value += 50;
-////			   rt_thread_delay(200);
-////			 }
-//		 ++count2;
-//		 rt_thread_delay(10);
-//	 }
-//		else 
-//			Desire_value = 0;
-//		  rt_thread_delay(10);
-//	}
-//	   rt_thread_delay(10);
-//}
 	
 void display_thread_entry(void* parameter)
 {
@@ -434,35 +418,33 @@ int pid_thread_init()
 }
 INIT_APP_EXPORT(pid_thread_init);
 
-
 int stepmotor_thread_init()
 {
 	rt_thread_t tid;
 
-    tid = rt_thread_create("stepmotor",
+    tid = rt_thread_create("control",
         stepmotor_thread_entry, RT_NULL,
+        2048, 8, 20);
+
+    if (tid != RT_NULL)
+        rt_thread_startup(tid);	
+    return 0;   
+}
+INIT_APP_EXPORT(stepmotor_thread_init);
+
+int control_thread_init()
+{
+	rt_thread_t tid;
+
+    tid = rt_thread_create("control",
+        control_thread_entry, RT_NULL,
         2048, 8, 20);
 
     if (tid != RT_NULL)
         rt_thread_startup(tid);	
     return 0;
 }
-INIT_APP_EXPORT(stepmotor_thread_init);
-
-//int Test_rubber_thread_init()
-//{
-//    rt_thread_t tid;
-
-//    tid = rt_thread_create("Test_rubber_line",
-//        Test_rubber_line_entry, RT_NULL,
-//        2048, 15, 20);
-
-//    if (tid != RT_NULL)
-//        rt_thread_startup(tid);
-//	
-//    return 0;
-//}
-//INIT_APP_EXPORT(Test_rubber_thread_init);	
+INIT_APP_EXPORT(control_thread_init);
 
 int display_thread_init()
 {
